@@ -1,0 +1,16 @@
+{
+    "name": "Xiang.HotUpdate",
+    "rootNamespace": "",
+    "references": [
+        "Xiang.AOT"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

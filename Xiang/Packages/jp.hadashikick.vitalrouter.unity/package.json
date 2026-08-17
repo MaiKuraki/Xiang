@@ -1,0 +1,12 @@
+{
+  "name": "jp.hadashikick.vitalrouter.unity",
+  "displayName": "VitalRouter.Unity",
+  "version": "2.8.0",
+  "unity": "2022.2",
+  "description": "The source-generator powered zero-allocation in-memory message passing library for Unity and .NET.",
+  "keywords": ["pubsub", "event", "mvc", "framework"],
+  "license": "MIT",
+  "documentationUrl": "https://github.com/hadashiA/VitalRouter",
+  "changelogUrl": "https://github.com/hadashiA/VitalRouter/releases",
+  "licensesUrl": "https://github.com/hadashiA/VitalRouter/blob/master/LICENSE"
+}
