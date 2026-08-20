@@ -1,0 +1,30 @@
+{
+    "name": "CycloneGames.UIFramework.Tests.Editor",
+    "rootNamespace": "CycloneGames.UIFramework.Tests.Editor",
+    "references": [
+        "CycloneGames.UIFramework.Runtime",
+        "CycloneGames.UIFramework.Editor",
+        "CycloneGames.UIFramework.Editor.Integrations.Localization",
+        "CycloneGames.UIFramework.Runtime.Integrations.Localization",
+        "CycloneGames.Localization.Core",
+        "CycloneGames.Localization.Runtime",
+        "CycloneGames.AssetManagement.Runtime",
+        "CycloneGames.Logging.Core",
+        "Unity.TextMeshPro",
+        "UniTask"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

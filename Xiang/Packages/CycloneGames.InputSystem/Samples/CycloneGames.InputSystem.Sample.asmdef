@@ -1,0 +1,21 @@
+{
+    "name": "CycloneGames.InputSystem.Sample",
+    "rootNamespace": "CycloneGames.InputSystem.Sample",
+    "references": [
+        "CycloneGames.InputSystem.Runtime",
+        "CycloneGames.IO.Unity",
+        "UniTask",
+        "R3.Unity",
+        "Unity.InputSystem",
+        "CycloneGames.Logging.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

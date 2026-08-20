@@ -1,0 +1,19 @@
+{
+    "name": "CycloneGames.InputSystem.Tools.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "CycloneGames.InputSystem.Runtime",
+        "R3.Unity",
+        "Unity.InputSystem",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

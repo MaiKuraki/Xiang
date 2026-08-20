@@ -21,6 +21,7 @@
     - 试题中提到的 Json 方案须拓展实现
 - UI 框架
     - [UIFramework](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.UIFramework) 支持 MVP 设计的 UI 框架
+    - [Localization](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.Localization) 作为 UI 框架的依赖被引入。
 - 资源管理封装
     - [AssetManagement](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.AssetManagement) Demo 中 UI 与资源所需
 - Utility
@@ -29,6 +30,7 @@
     - [Logging](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.Logging) Log 模块
 - 触摸输入模块
     - [InputSystem](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.InputSystem) 可选 InputRx + NewInputSystem + UGUI(IPointer/IDrag) 实现触摸输入
+    - [Yaml](https://github.com/hadashiA/VYaml) VYaml 作为 InputSystem 的依赖被引入
 ### 缺失模块及实现
 - EventBus
     - EventBus 自己实现

@@ -1,0 +1,27 @@
+{
+    "name": "CycloneGames.AssetManagement.Runtime.Providers.YooAsset",
+    "rootNamespace": "",
+    "references": [
+        "UniTask",
+        "CycloneGames.AssetManagement.Runtime",
+        "CycloneGames.Logging.Core",
+        "YooAsset"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "CYCLONEGAMES_HAS_YOOASSET"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.tuyoogame.yooasset",
+            "expression": "[3.0.5,4.0.0)",
+            "define": "CYCLONEGAMES_HAS_YOOASSET"
+        }
+    ],
+    "noEngineReferences": false
+}

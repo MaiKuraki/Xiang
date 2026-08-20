@@ -1,0 +1,21 @@
+{
+    "name": "CycloneGames.Localization.Components",
+    "rootNamespace": "",
+    "references": [
+        "CycloneGames.Logging.Core",
+        "CycloneGames.Localization.Core",
+        "UniTask",
+        "CycloneGames.Localization.Runtime",
+        "CycloneGames.AssetManagement.Runtime",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
