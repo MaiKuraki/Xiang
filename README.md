@@ -44,6 +44,6 @@
 
 ## Build 打包流程
 
-打包请点选项目内 `Assets/Xiang/Editor/Build/BuildData.asset` 配置文件的 Build Actions 选项卡下 Release (Local Dirty)
+打包请点选项目内 `Assets/Xiang/Editor/Build/BuildData.asset` 配置文件的 Build Actions 选项卡下 `Release(Local Dirty)`
 
-<img src="./Doc/Media/BuildTutorial.png" alt="Branch Select" style="width: 50%; height: auto; max-width: 800px;" />
+<img src="./Doc/Media/BuildTutorial.png" alt="Branch Select" style="width: 80%; height: auto; max-width: 1000px;" />
