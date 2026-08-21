@@ -1,0 +1,18 @@
+{
+    "name": "Xiang.Sample.Runtime",
+    "rootNamespace": "Xiang.Sample",
+    "references": [
+        "CycloneGames.Persistence.Core",
+        "CycloneGames.Persistence.NewtonsoftJson",
+        "CycloneGames.Logging.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
