@@ -1,0 +1,17 @@
+{
+    "name": "CycloneGames.Persistence.NewtonsoftJson",
+    "rootNamespace": "CycloneGames.Persistence.NewtonsoftJson",
+    "references": [
+        "CycloneGames.Persistence.Core",
+        "CycloneGames.Persistence.SystemIO"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

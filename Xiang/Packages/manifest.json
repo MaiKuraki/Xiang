@@ -11,6 +11,7 @@
     "com.cyclone-games.logging.pipeline": "file:CycloneGames.Logging.Pipeline",
     "com.cyclone-games.logging.unity": "file:CycloneGames.Logging.Unity",
     "com.cyclone-games.persistence": "file:CycloneGames.Persistence",
+    "com.cyclone-games.persistence.systemio": "file:CycloneGames.Persistence.SystemIO",
     "com.cyclone-games.ui-framework": "file:CycloneGames.UIFramework",
     "com.cyclone-games.utility": "file:CycloneGames.Utility",
     "com.cysharp.r3": "file:com.cysharp.r3",
