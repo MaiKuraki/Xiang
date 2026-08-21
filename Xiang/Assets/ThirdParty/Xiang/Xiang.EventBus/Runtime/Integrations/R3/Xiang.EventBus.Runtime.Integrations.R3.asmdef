@@ -1,0 +1,21 @@
+{
+    "name": "Xiang.EventBus.Runtime.Integrations.R3",
+    "rootNamespace": "Xiang.EventBus.Runtime.Integrations.R3",
+    "references": [
+        "Xiang.EventBus.Core",
+        "R3.Unity"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "R3.dll",
+        "Microsoft.Bcl.TimeProvider.dll",
+        "Microsoft.Bcl.AsyncInterfaces.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

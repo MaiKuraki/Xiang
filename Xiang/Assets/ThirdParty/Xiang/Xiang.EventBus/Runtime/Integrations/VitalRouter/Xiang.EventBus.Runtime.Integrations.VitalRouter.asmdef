@@ -1,0 +1,19 @@
+{
+    "name": "Xiang.EventBus.Runtime.Integrations.VitalRouter",
+    "rootNamespace": "Xiang.EventBus.Runtime.Integrations.VitalRouter",
+    "references": [
+        "Xiang.EventBus.Core",
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "VitalRouter.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

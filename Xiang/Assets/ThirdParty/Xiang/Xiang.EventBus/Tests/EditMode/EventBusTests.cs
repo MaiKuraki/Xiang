@@ -1,0 +1,227 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using NUnit.Framework;
+using Xiang.EventBus.Core;
+
+namespace Xiang.EventBus.Tests
+{
+    public sealed class EventBusTests
+    {
+        [Test]
+        public void Subscribe_Publish_DeliversToAllHandlers()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            int a = 0;
+            int b = 0;
+            bus.Subscribe(evt => a = evt.Score);
+            bus.Subscribe(evt => b = evt.Score);
+
+            var evt = new ScoreChanged { Score = 42 };
+            bus.Publish(in evt);
+
+            Assert.That(a, Is.EqualTo(42));
+            Assert.That(b, Is.EqualTo(42));
+        }
+
+        [Test]
+        public void Unsubscribe_StopsDelivery()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            int delivered = 0;
+            Action<ScoreChanged> handler = evt => delivered++;
+            IEventSubscription subscription = bus.Subscribe(handler);
+            subscription.Dispose();
+
+            var evt = new ScoreChanged();
+            bus.Publish(in evt);
+
+            Assert.That(delivered, Is.Zero);
+            Assert.That(bus.TombstoneCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void SubscribeDuringPublish_DoesNotFireThisRound()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            bool secondFired = false;
+            bus.Subscribe(evt =>
+            {
+                bus.Subscribe(_ => secondFired = true);
+            });
+
+            var evt = new ScoreChanged();
+            bus.Publish(in evt);
+
+            Assert.That(secondFired, Is.False);
+
+            bus.Publish(in evt);
+            Assert.That(secondFired, Is.True);
+        }
+
+        [Test]
+        public void UnsubscribeDuringPublish_SkipsNulledSlot()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            int first = 0;
+            int second = 0;
+            Action<ScoreChanged> secondHandler = _ => second++;
+
+            // The first handler unsubscribes the second before the iteration reaches it, so the
+            // second handler's slot is already null when the loop arrives and it is skipped.
+            bus.Subscribe(_ =>
+            {
+                first++;
+                bus.Unsubscribe(secondHandler);
+            });
+            bus.Subscribe(secondHandler);
+
+            var evt = new ScoreChanged();
+            bus.Publish(in evt);
+
+            Assert.That(first, Is.EqualTo(1));
+            Assert.That(second, Is.Zero);
+        }
+
+        [Test]
+        public void SubscriptionScope_Dispose_ReleasesAllSubscriptions()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            var scope = new SubscriptionScope();
+            int delivered = 0;
+            scope.Add(bus, _ => delivered++);
+            scope.Add(bus, _ => delivered++);
+
+            Assert.That(scope.Count, Is.EqualTo(2));
+            scope.Dispose();
+
+            var evt = new ScoreChanged();
+            bus.Publish(in evt);
+
+            Assert.That(delivered, Is.Zero);
+        }
+
+        [Test]
+        public void Publish_ZeroAllocation_AfterWarmup()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            bus.Subscribe(_ => { });
+            bus.Subscribe(_ => { });
+
+            // Warm up generic/array paths.
+            var evt = new ScoreChanged { Score = 1 };
+            for (int index = 0; index < 4; index++)
+            {
+                bus.Publish(in evt);
+            }
+
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int index = 0; index < 1000; index++)
+            {
+                bus.Publish(in evt);
+            }
+
+            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+            // Proxy assertion: managed allocation only. It does not replace Profiler GC.Alloc
+            // measurement for the actual frame.
+            Assert.That(allocated, Is.Zero, $"Publish allocated {allocated} bytes.");
+        }
+
+        [Test]
+        public void Snapshot_ReflectsCounters()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            bus.Subscribe(_ => { });
+            var evt = new ScoreChanged();
+            bus.Publish(in evt);
+
+            EventBusSnapshot snapshot = bus.GetSnapshot();
+
+            Assert.That(snapshot.SubscriptionCount, Is.EqualTo(1));
+            Assert.That(snapshot.TombstoneCount, Is.Zero);
+            Assert.That(snapshot.PublishCount, Is.EqualTo(1));
+        }
+
+        private struct ScoreChanged
+        {
+            public int Score;
+        }
+    }
+
+    public sealed class InProcessCommandPublisherTests
+    {
+        [Test]
+        public async Task Publish_DispatchesToRegisteredHandler()
+        {
+            using var publisher = new InProcessCommandPublisher();
+            int received = 0;
+            publisher.RegisterHandler<SpawnAtCommand>(command => received = command.GridX);
+
+            await publisher.PublishAsync(new SpawnAtCommand { GridX = 7 });
+
+            Assert.That(received, Is.EqualTo(7));
+        }
+
+        [Test]
+        public async Task DropPolicy_Overflow_DoesNotGrowUnbounded()
+        {
+            using var publisher = new InProcessCommandPublisher(capacity: 2, CommandOverflowPolicy.Drop);
+            var outerGate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            int outerRuns = 0;
+
+            publisher.RegisterHandler<SpawnAtCommand>(async (command, cancellationToken) =>
+            {
+                outerRuns++;
+                await outerGate.Task;
+            });
+
+            Task first = publisher.PublishAsync(new SpawnAtCommand { GridX = -1 }).AsTask();
+            await Task.Yield();
+
+            // Publish more commands while the first handler is still running. Capacity is 2, so at
+            // most 2 are enqueued; the rest are dropped without throwing.
+            for (int index = 0; index < 8; index++)
+            {
+                await publisher.PublishAsync(new SpawnAtCommand { GridX = index });
+            }
+
+            Assert.That(outerRuns, Is.EqualTo(1));
+            Assert.That(publisher.PendingCommandCount, Is.LessThanOrEqualTo(2));
+
+            outerGate.SetResult(true);
+            await first;
+        }
+
+        [Test]
+        public async Task FailFastPolicy_Overflow_Throws()
+        {
+            using var publisher = new InProcessCommandPublisher(capacity: 1, CommandOverflowPolicy.FailFast);
+            var outerGate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            publisher.RegisterHandler<SpawnAtCommand>(async (command, cancellationToken) =>
+            {
+                await outerGate.Task;
+            });
+
+            Task first = publisher.PublishAsync(new SpawnAtCommand()).AsTask();
+
+            // Second publish while the first handler is still running: the queue is empty, so it is
+            // enqueued. The third exceeds the capacity and must fail fast.
+            Task second = publisher.PublishAsync(new SpawnAtCommand()).AsTask();
+
+            // ThrowsAsync returns the exception directly (not Task<Exception>), so it is not awaited.
+            // .AsTask() keeps the async lambda target-typed to AsyncTestDelegate.
+            Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await publisher.PublishAsync(new SpawnAtCommand()).AsTask());
+
+            outerGate.SetResult(true);
+            await first;
+            await second;
+        }
+
+        private struct SpawnAtCommand
+        {
+            public int GridX;
+        }
+    }
+}

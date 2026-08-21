@@ -1,0 +1,19 @@
+{
+    "name": "Xiang.EventBus.Editor",
+    "rootNamespace": "Xiang.EventBus.Editor",
+    "references": [
+        "Xiang.EventBus.Core",
+        "Xiang.EventBus.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
