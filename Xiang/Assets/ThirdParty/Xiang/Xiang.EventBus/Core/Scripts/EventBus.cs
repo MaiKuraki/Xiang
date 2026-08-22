@@ -24,6 +24,7 @@ namespace Xiang.EventBus.Core
         private readonly int _maxDispatchDepth;
         private readonly string _category;
         private readonly IEventBusLogSink _logSink;
+        private readonly PublishErrorPolicy _publishErrorPolicy;
 
         private Action<T>[] _handlers;
         private int _slots;
@@ -48,6 +49,7 @@ namespace Xiang.EventBus.Core
 
             _maxDispatchDepth = configuration.MaxDispatchDepth;
             _logSink = configuration.LogSink ?? NullEventBusLogSink.Instance;
+            _publishErrorPolicy = configuration.PublishErrorPolicy;
             _category = typeof(T).Name;
             _handlers = new Action<T>[initialCapacity];
         }
@@ -80,7 +82,7 @@ namespace Xiang.EventBus.Core
                     {
                         _handlers[index] = handler;
                         _tombstones--;
-                        LogSubscription(handler, "subscribed (reused tombstone slot)");
+                        LogSubscription("subscribed (reused tombstone slot)");
                         return new EventSubscription(() => Unsubscribe(handler));
                     }
                 }
@@ -88,13 +90,23 @@ namespace Xiang.EventBus.Core
 
             EnsureCapacity(_slots + 1);
             _handlers[_slots++] = handler;
-            LogSubscription(handler, "subscribed");
+            LogSubscription("subscribed");
             return new EventSubscription(() => Unsubscribe(handler));
         }
 
-        public void Unsubscribe(Action<T> handler)
+        /// <summary>
+        /// Removes <paramref name="handler"/> and returns true when it was subscribed, or false when
+        /// it was not found (or the bus is already disposed). Unsubscribing a disposed bus is a no-op
+        /// because disposal has already dropped every handler; this keeps deferred scope disposal
+        /// (for example a MonoBehaviour OnDestroy running after the context disposed the bus) safe.
+        /// </summary>
+        public bool Unsubscribe(Action<T> handler)
         {
-            ThrowIfDisposed();
+            if (_disposed)
+            {
+                return false;
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -106,10 +118,12 @@ namespace Xiang.EventBus.Core
                 {
                     _handlers[index] = null;
                     _tombstones++;
-                    LogSubscription(handler, "unsubscribed");
-                    return;
+                    LogSubscription("unsubscribed");
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public void Publish(in T evt)
@@ -118,8 +132,6 @@ namespace Xiang.EventBus.Core
 
             if (_dispatchDepth >= _maxDispatchDepth)
             {
-                // Re-entrant publish beyond the guard. This is an exceptional cold-path event, so we
-                // signal it via a counter only; the hot path must not touch the log sink.
                 _droppedReentrantCount++;
                 return;
             }
@@ -132,9 +144,21 @@ namespace Xiang.EventBus.Core
                 for (int index = 0; index < count; index++)
                 {
                     Action<T> handler = _handlers[index];
-                    if (handler != null)
+                    if (handler == null)
+                    {
+                        continue;
+                    }
+
+                    // The exception filter runs only when a subscriber throws, so the hot path has
+                    // zero overhead from the try/catch. In Stop mode the exception propagates; in
+                    // Swallow mode it is logged (cold path) and dispatch continues.
+                    try
                     {
                         handler(evt);
+                    }
+                    catch (Exception exception) when (_publishErrorPolicy == PublishErrorPolicy.Swallow)
+                    {
+                        LogException(exception);
                     }
                 }
             }
@@ -222,11 +246,25 @@ namespace Xiang.EventBus.Core
             _handlers = next;
         }
 
-        private void LogSubscription(Action<T> handler, string operation)
+        private void LogSubscription(string operation)
         {
             // No reflection: the delegate method name is deliberately omitted so the cold path stays
             // AOT-safe. The event type is already carried by the category.
             Log(operation);
+        }
+
+        private void LogException(Exception exception)
+        {
+            if (!_logSink.IsEnabled(EventBusLogSeverity.Error, _category))
+            {
+                return;
+            }
+
+            _logSink.WriteException(
+                EventBusLogSeverity.Error,
+                _category,
+                exception,
+                "A subscriber threw while publishing.");
         }
 
         private void Log(string message)

@@ -16,6 +16,7 @@ namespace Xiang.EventBus.Core
             int commandQueueCapacity = DefaultCommandQueueCapacity,
             CommandOverflowPolicy commandOverflowPolicy = CommandOverflowPolicy.Drop,
             int maxDispatchDepth = DefaultMaxDispatchDepth,
+            PublishErrorPolicy publishErrorPolicy = PublishErrorPolicy.Stop,
             IEventBusLogSink logSink = null)
         {
             if (commandQueueCapacity <= 0)
@@ -33,6 +34,7 @@ namespace Xiang.EventBus.Core
             CommandOverflowPolicy = commandOverflowPolicy;
             MaxDispatchDepth = maxDispatchDepth;
             LogSink = logSink ?? NullEventBusLogSink.Instance;
+            PublishErrorPolicy = publishErrorPolicy;
         }
 
         public CommandBackend CommandBackend { get; }
@@ -44,5 +46,7 @@ namespace Xiang.EventBus.Core
         public int MaxDispatchDepth { get; }
 
         public IEventBusLogSink LogSink { get; }
+
+        public PublishErrorPolicy PublishErrorPolicy { get; }
     }
 }

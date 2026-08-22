@@ -41,6 +41,58 @@ namespace Xiang.EventBus.Tests
         }
 
         [Test]
+        public void Unsubscribe_ReturnsTrueWhenFound_AndFalseOtherwise()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            Action<ScoreChanged> handler = _ => { };
+            bus.Subscribe(handler);
+
+            Assert.That(bus.Unsubscribe(handler), Is.True);
+            Assert.That(bus.Unsubscribe(handler), Is.False);
+        }
+
+        [Test]
+        public void Unsubscribe_AfterBusDisposed_IsSafeNoOp()
+        {
+            var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);
+            Action<ScoreChanged> handler = _ => { };
+            IEventSubscription subscription = bus.Subscribe(handler);
+
+            bus.Dispose();
+
+            // Deferred scope disposal (e.g. MonoBehaviour OnDestroy after context disposed the bus)
+            // must not throw.
+            Assert.DoesNotThrow(() => subscription.Dispose());
+            Assert.That(bus.Unsubscribe(handler), Is.False);
+        }
+
+        [Test]
+        public void Publish_StopPolicy_PropagatesFirstHandlerException()
+        {
+            var config = new EventBusConfiguration(publishErrorPolicy: PublishErrorPolicy.Stop);
+            var bus = new EventBus<ScoreChanged>(config);
+            int after = 0;
+            bus.Subscribe(_ => throw new InvalidOperationException("boom"));
+            bus.Subscribe(_ => after++);
+
+            Assert.Throws<InvalidOperationException>(() => bus.Publish(new ScoreChanged()));
+            Assert.That(after, Is.Zero);
+        }
+
+        [Test]
+        public void Publish_SwallowPolicy_ContinuesToRemainingHandlers()
+        {
+            var config = new EventBusConfiguration(publishErrorPolicy: PublishErrorPolicy.Swallow);
+            var bus = new EventBus<ScoreChanged>(config);
+            int after = 0;
+            bus.Subscribe(_ => throw new InvalidOperationException("boom"));
+            bus.Subscribe(_ => after++);
+
+            Assert.DoesNotThrow(() => bus.Publish(new ScoreChanged()));
+            Assert.That(after, Is.EqualTo(1));
+        }
+
+        [Test]
         public void SubscribeDuringPublish_DoesNotFireThisRound()
         {
             var bus = new EventBus<ScoreChanged>(EventBusConfiguration.Default);

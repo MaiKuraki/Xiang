@@ -50,7 +50,14 @@ namespace Xiang.EventBus.Core
                 throw new ArgumentNullException(nameof(handler));
             }
 
-            _handlers[typeof(TCommand)] = handler;
+            Type commandType = typeof(TCommand);
+            if (_handlers.ContainsKey(commandType))
+            {
+                throw new InvalidOperationException(
+                    $"A handler for '{commandType.FullName}' is already registered.");
+            }
+
+            _handlers[commandType] = handler;
         }
 
         /// <summary>
