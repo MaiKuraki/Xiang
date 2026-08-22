@@ -24,6 +24,7 @@
     - [Localization](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.Localization) 作为 UI 框架的依赖被引入。
 - 资源管理封装
     - [AssetManagement](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.AssetManagement) Demo 中 UI 与资源所需
+    - [Navigathena](https://github.com/mackysoft/Navigathena) Demo 场景管理
 - Utility
     - [Utility](https://github.com/MaiKuraki/UnityStarter/tree/main/UnityStarter/Assets/ThirdParty/CycloneGames/CycloneGames.Utility) UI 安全区工具， FPS 工具，单例
 - Logging
