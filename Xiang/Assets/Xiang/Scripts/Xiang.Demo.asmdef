@@ -1,3 +1,25 @@
 {
-	"name": "Xiang.Demo"
+    "name": "Xiang.Demo",
+    "rootNamespace": "",
+    "references": [
+        "CycloneGames.Logging.Core",
+        "CycloneGames.Logging.Pipeline",
+        "CycloneGames.Logging.Unity",
+        "CycloneGames.Hash.Core",
+        "CycloneGames.IO.Core",
+        "CycloneGames.IO.Unity",
+        "CycloneGames.AssetManagement.Runtime",
+        "CycloneGames.AssetManagement.Runtime.Providers.YooAsset",
+        "CycloneGames.UIFramework.Runtime",
+        "CycloneGames.UIFramework.Runtime.Integrations.AssetManagement"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
